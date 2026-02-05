@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+ * Sola Payments Extension for Magento 1
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ -->
+<layout version="1.0">
+    <default>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </default>
+
+    <adminhtml_sales_order_view>
+        <reference name="left">
+            <block type="solapayments/info" name="order.payment.info" template="openmage/solapayments/info.phtml"/>
+        </reference>
+    </adminhtml_sales_order_view>
+</layout>

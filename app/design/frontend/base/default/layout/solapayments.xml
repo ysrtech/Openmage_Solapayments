@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+ * Sola Payments Extension for Magento 1
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ -->
+<layout version="1.0">
+    <default>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </default>
+
+    <checkout_onepage_index>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </checkout_onepage_index>
+
+    <!-- One Step Checkout Compatibility -->
+    <onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+            <action method="addJs"><script>openmage/solapayments/idev-compat.js</script></action>
+        </reference>
+    </onestepcheckout_index_index>
+
+    <onestepcheckout_index_loadvalues>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_index_loadvalues>
+
+    <onestepcheckout_ajax_saveOrder>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_ajax_saveOrder>
+
+    <onestepcheckout_ajax_add_extra_product>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_ajax_add_extra_product>
+
+    <onestepcheckout_ajax_set_methods_separate>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_ajax_set_methods_separate>
+
+    <onestepcheckout_ajax_paymentrefresh>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_ajax_paymentrefresh>
+
+    <onestepcheckout_ajax_save_billing>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+        </reference>
+    </onestepcheckout_ajax_save_billing>
+
+    <idev_onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addJs"><script>openmage/solapayments/solapayments.js</script></action>
+            <action method="addJs"><script>openmage/solapayments/idev-compat.js</script></action>
+        </reference>
+    </idev_onestepcheckout_index_index>
+
+    <solapayments_solapayment_redirect>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="solapayments/form" name="solapayments.redirect" template="openmage/solapayments/redirect.phtml"/>
+        </reference>
+    </solapayments_solapayment_redirect>
+
+    <solapayments_solapayment_return>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+    </solapayments_solapayment_return>
+
+    <solapayments_solapayment_cancel>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+    </solapayments_solapayment_cancel>
+</layout>

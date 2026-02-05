@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!--
+ * Sola Payments Extension for Magento 1
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magento.com so we can send you a copy immediately.
+ *
+ * @category   Openmage
+ * @package    Openmage_Solapayments
+ * @copyright  Copyright (c) 2024 Openmage
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ -->
+<config>
+    <modules>
+        <Openmage_Solapayments>
+            <version>1.0.0</version>
+        </Openmage_Solapayments>
+    </modules>
+
+    <global>
+        <models>
+            <solapayments>
+                <class>Openmage_Solapayments_Model</class>
+            </solapayments>
+        </models>
+        <helpers>
+            <solapayments>
+                <class>Openmage_Solapayments_Helper</class>
+            </solapayments>
+        </helpers>
+        <blocks>
+            <solapayments>
+                <class>Openmage_Solapayments_Block</class>
+            </solapayments>
+        </blocks>
+        <sales>
+            <quote>
+                <totals>
+                    <solapayments_fee>
+                        <class>solapayments/quote_total</class>
+                        <after>subtotal</after>
+                    </solapayments_fee>
+                </totals>
+            </quote>
+            <order_invoice>
+                <totals>
+                    <solapayments_fee>
+                        <class>solapayments/order_invoice_total</class>
+                    </solapayments_fee>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <solapayments_fee>
+                        <class>solapayments/order_creditmemo_total</class>
+                    </solapayments_fee>
+                </totals>
+            </order_creditmemo>
+        </sales>
+        <resources>
+            <solapayments_setup>
+                <setup>
+                    <module>Openmage_Solapayments</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </solapayments_setup>
+        </resources>
+    </global>
+
+    <frontend>
+        <routers>
+            <solapayments>
+                <use>standard</use>
+                <args>
+                    <module>Openmage_Solapayments</module>
+                    <frontName>solapayments</frontName>
+                </args>
+            </solapayments>
+        </routers>
+        <layout>
+            <updates>
+                <solapayments module="Openmage_Solapayments">
+                    <file>solapayments.xml</file>
+                </solapayments>
+            </updates>
+        </layout>
+    </frontend>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <solapayments module="Openmage_Solapayments">
+                    <file>solapayments.xml</file>
+                </solapayments>
+            </updates>
+        </layout>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <solapayments>
+                <use>admin</use>
+                <args>
+                    <module>Openmage_Solapayments</module>
+                    <frontName>solapayments</frontName>
+                </args>
+            </solapayments>
+        </routers>
+    </admin>
+
+    <default>
+        <payment>
+            <solapayments>
+                <active>0</active>
+                <model>solapayments/method</model>
+                <title>Credit Card</title>
+                <payment_action>authorize</payment_action>
+                <order_status>processing</order_status>
+                <allowspecific>0</allowspecific>
+                <cgi_url>https://api.cardknox.com/api/transaction</cgi_url>
+                <can_authorize>1</can_authorize>
+                <can_capture>1</can_capture>
+                <can_use_checkout>1</can_use_checkout>
+                <can_use_internal>1</can_use_internal>
+            </solapayments>
+        </payment>
+    </default>
+</config>
