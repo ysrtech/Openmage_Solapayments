@@ -9,8 +9,9 @@
  * OpenMage onepage checkout (wraps Payment.prototype.save; no 3D Secure there).
  * Settings: window.solapaymentsConfig (Block/Scripts.php).
  */
-(function () {
+document.addEventListener('DOMContentLoaded', function () {
     'use strict';
+    // the settings are printed after this file (Block/Scripts.php), so read them now
     var cfg = window.solapaymentsConfig;
     if (!cfg) { return; }
     var CODE = 'solapayments';
@@ -168,7 +169,7 @@
     }
 
     // wire up after every DOMContentLoaded handler ran (the checkout's API is created in one)
-    document.addEventListener('DOMContentLoaded', function () { setTimeout(wire, 0); });
+    setTimeout(wire, 0);
     function wire() {
         start();
         var uc = window.UnifiedCheckout;
@@ -197,4 +198,4 @@
         var dup = q('[data-sp-duplicate]');
         if (dup && (e.detail.message || '').indexOf(cfg.text.duplicate) === 0) { dup.hidden = false; }
     });
-})();
+});

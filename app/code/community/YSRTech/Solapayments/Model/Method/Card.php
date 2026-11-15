@@ -241,8 +241,9 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
         if ($payment->getAdditionalInformation('save_card')) {
             $this->_saveCard($payment, $response);
         }
-        // single-use tokens are of no further use
-        $payment->unsAdditionalInformation('xCardNum')->unsAdditionalInformation('xCVV');
+        // single-use tokens are of no further use (not unsAdditionalInformation(): for a key that
+        // is not set it clears all additional information)
+        $payment->setAdditionalInformation('xCardNum', null)->setAdditionalInformation('xCVV', null);
     }
 
     /**
