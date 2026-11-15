@@ -9,15 +9,17 @@ class YSRTech_Solapayments_Block_Scripts extends Mage_Core_Block_Template
     protected function _toHtml()
     {
         $helper = Mage::helper('solapayments');
-        if (!$helper->getConfigFlag('active') || $helper->getTokenKey() === '') {
+        // admin Create Order: the settings of the store the order is for
+        $store = Mage::app()->getStore()->isAdmin() ? Mage::getSingleton('adminhtml/session_quote')->getStoreId() : null;
+        if (!$helper->getConfigFlag('active', $store) || $helper->getTokenKey($store) === '') {
             return '';
         }
         $config = [
-            'tokenKey'        => $helper->getTokenKey(),
+            'tokenKey'        => $helper->getTokenKey($store),
             'softwareName'    => $helper->getSoftwareName(),
             'softwareVersion' => YSRTech_Solapayments_Helper_Data::VERSION,
-            'threeDs'         => $helper->isThreeDsEnabled(),
-            'threeDsEnv'      => (string) $helper->getConfig('cardknox_three_d_secure_environment') ?: 'production',
+            'threeDs'         => $helper->isThreeDsEnabled($store),
+            'threeDsEnv'      => (string) $helper->getConfig('cardknox_three_d_secure_environment', $store) ?: 'production',
             'verifyUrl'       => $this->getUrl('solapayments/threeds/verify', ['_secure' => true]),
             'formKey'         => Mage::getSingleton('core/session')->getFormKey(),
             'text'            => [
@@ -31,7 +33,7 @@ class YSRTech_Solapayments_Block_Scripts extends Mage_Core_Block_Template
                 'duplicate'      => 'Duplicate Transaction',
             ],
         ];
-        return '<script src="' . $this->escapeUrl($helper->getIfieldsUrl('ifields.min.js')) . '"></script>' . "\n"
+        return '<script src="' . $this->escapeUrl($helper->getIfieldsUrl('ifields.min.js', $store)) . '"></script>' . "\n"
             . '<script>window.solapaymentsConfig = ' . Mage::helper('core')->jsonEncode($config) . ';</script>' . "\n";
     }
 }

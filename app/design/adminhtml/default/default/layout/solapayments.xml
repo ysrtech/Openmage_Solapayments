@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- YSRTech_Solapayments in admin Create Order: iFields script and the card form script -->
+<layout version="0.1.0">
+    <adminhtml_sales_order_create_index>
+        <reference name="head">
+            <block type="solapayments/scripts" name="solapayments.scripts"/>
+            <action method="addItem"><type>skin_css</type><name>solapayments/card.css</name></action>
+            <action method="addItem"><type>skin_js</type><name>solapayments/admin.js</name></action>
+        </reference>
+    </adminhtml_sales_order_create_index>
+</layout>

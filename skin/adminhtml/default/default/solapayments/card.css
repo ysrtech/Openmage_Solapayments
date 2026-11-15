@@ -1,0 +1,53 @@
+/*
+ * Sola Payments card form and saved cards page. Uses the checkout's variables when present
+ * (YSRTech_UnifiedCheckout: --ysc-accent, --ysc-border, --ysc-radius ...).
+ */
+.sp-form { --sp-accent: var(--ysc-accent, #1773b0); --sp-border: var(--ysc-border, #d9d9d9); --sp-radius: var(--ysc-radius, 6px);
+           --sp-error: var(--ysc-error, #dd1d1d); --sp-muted: var(--ysc-muted, #707070); display: grid; gap: 12px; }
+.sp-form [hidden] { display: none !important; }
+
+.sp-saved { display: grid; overflow: hidden; border: 1px solid var(--sp-border); border-radius: var(--sp-radius); background: #fff; }
+.sp-form .sp-saved__card { display: flex; align-items: center; gap: 10px; margin: 0; padding: 13px 14px; border-top: 1px solid var(--sp-border);
+                  font-size: 14px; font-weight: 400; cursor: pointer; }
+.sp-form .sp-saved__card:first-child { border-top: 0; }
+.sp-saved__card input { width: 18px; height: 18px; margin: 0; accent-color: var(--sp-accent); }
+.sp-saved__card:has(input:checked) { background: color-mix(in srgb, var(--sp-accent) 6%, #fff); }
+.sp-saved__number { font-weight: 600; letter-spacing: .5px; }
+.sp-saved__exp { margin-left: auto; color: var(--sp-muted); font-size: 13px; }
+
+.sp-new { display: grid; gap: 12px; }
+.sp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sp-field { position: relative; height: 48px; overflow: hidden; border: 1px solid var(--sp-border); border-radius: var(--sp-radius); background: #fff;
+            transition: border-color .15s, box-shadow .15s; }
+.sp-field:focus-within { border-color: var(--sp-accent); box-shadow: 0 0 0 1px var(--sp-accent); }
+.sp-field.is-invalid, .sp-field:has(.sp-input.is-invalid) { border-color: var(--sp-error); box-shadow: 0 0 0 1px var(--sp-error); }
+.sp-field iframe { display: block; width: 100%; height: 46px; border: 0; }
+.sp-input { display: block; width: 100%; height: 46px; margin: 0; padding: 0 12px; border: 0; outline: none; background: transparent;
+            font: inherit; font-size: 15px; box-shadow: none; }
+.sp-field--card::after { content: ""; position: absolute; top: 50%; right: 12px; width: 18px; height: 18px; transform: translateY(-50%); opacity: .5;
+                          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23707070' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") no-repeat center / contain; }
+.sp-error { margin: 0; color: var(--sp-error); font-size: 13px; }
+.sp-error:empty { display: none; }
+.sp-form .sp-check { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 400; cursor: pointer; }
+.sp-check input { width: 18px; height: 18px; margin: 0; accent-color: var(--sp-accent); }
+.sp-duplicate { padding: 12px; border-radius: var(--sp-radius); background: #fff8e6; }
+
+.sp-brand { display: inline-flex; align-items: center; min-width: 44px; height: 24px; padding: 0 6px; border: 1px solid var(--sp-border, #d9d9d9);
+            border-radius: 4px; background: #fff; font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
+.sp-brand--visa { color: #1a1f71; } .sp-brand--mastercard { color: #eb001b; } .sp-brand--amex { color: #2e77bc; } .sp-brand--discover { color: #e55c20; }
+
+/* My Account > Saved cards */
+.sp-cards { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.sp-cards__item { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 18px; border: 1px solid #e5e7eb; border-radius: 12px; }
+.sp-cards__item.is-expired { opacity: .6; }
+.sp-cards__number { font-weight: 600; letter-spacing: .5px; }
+.sp-cards__exp { color: #6b7280; font-size: 14px; }
+.sp-cards__default { padding: 2px 10px; border-radius: 999px; background: #f3f4f6; font-size: 12px; font-weight: 600; }
+.sp-cards__actions { display: flex; gap: 16px; margin-left: auto; }
+.sp-cards__actions form { margin: 0; }
+.sp-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer; }
+.sp-link--danger:hover { color: #dc2626; }
+.sp-cards-empty { padding: 24px; border-radius: 12px; background: #f9fafb; color: #4b5563; }
+
+/* admin Create Order */
+.sp-form--admin { max-width: 420px; padding: 8px 0; }

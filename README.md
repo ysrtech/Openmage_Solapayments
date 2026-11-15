@@ -18,7 +18,9 @@ PHP 8.4. Replaces the 1.x `Openmage_Solapayments` module (same payment method co
 - **Level 3** data (tax, shipping, discount, line items).
 - Duplicate-transaction protection with a "place it anyway" option; Sola's error messages.
 
-In progress: Sola gift cards, Google Pay, Apple Pay, admin order entry with iFields.
+- **Admin Create Order**: charge a saved card of the customer, or a new card in iFields (optionally saved).
+
+In progress: Sola gift cards, Google Pay, Apple Pay.
 
 ## Checkout
 

@@ -10,11 +10,38 @@
     },
     "extra": {
         "map": [
-            ["app/etc/modules/YSRTech_Solapayments.xml", "app/etc/modules/YSRTech_Solapayments.xml"],
-            ["app/code/community/YSRTech/Solapayments", "app/code/community/YSRTech/Solapayments"],
-            ["app/design/frontend/base/default/layout/solapayments.xml", "app/design/frontend/base/default/layout/solapayments.xml"],
-            ["app/design/frontend/base/default/template/solapayments", "app/design/frontend/base/default/template/solapayments"],
-            ["skin/frontend/base/default/solapayments", "skin/frontend/base/default/solapayments"]
+            [
+                "app/etc/modules/YSRTech_Solapayments.xml",
+                "app/etc/modules/YSRTech_Solapayments.xml"
+            ],
+            [
+                "app/code/community/YSRTech/Solapayments",
+                "app/code/community/YSRTech/Solapayments"
+            ],
+            [
+                "app/design/frontend/base/default/layout/solapayments.xml",
+                "app/design/frontend/base/default/layout/solapayments.xml"
+            ],
+            [
+                "app/design/frontend/base/default/template/solapayments",
+                "app/design/frontend/base/default/template/solapayments"
+            ],
+            [
+                "skin/frontend/base/default/solapayments",
+                "skin/frontend/base/default/solapayments"
+            ],
+            [
+                "app/design/adminhtml/default/default/layout/solapayments.xml",
+                "app/design/adminhtml/default/default/layout/solapayments.xml"
+            ],
+            [
+                "app/design/adminhtml/default/default/template/solapayments",
+                "app/design/adminhtml/default/default/template/solapayments"
+            ],
+            [
+                "skin/adminhtml/default/default/solapayments",
+                "skin/adminhtml/default/default/solapayments"
+            ]
         ]
     }
 }

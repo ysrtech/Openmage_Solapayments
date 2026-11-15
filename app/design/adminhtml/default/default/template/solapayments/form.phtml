@@ -1,0 +1,61 @@
+<?php
+/**
+ * Sola Payments card form in admin Create Order: the customer's saved cards, or a new card
+ * in Cardknox iFields. Behaviour: skin (adminhtml) solapayments/admin.js. Card number and security code are iframes served by
+ * Cardknox; this page only ever receives single-use tokens (payment[xCardNum], payment[xCVV]).
+ *
+ * @var YSRTech_Solapayments_Block_Form $this
+ */
+$code     = $this->getMethodCode();
+$cards    = $this->getSavedCards();
+$selected = $this->getSelectedCardId($cards);
+$ifield   = $this->getIfieldUrl();
+?>
+<div class="sp-form sp-form--admin" id="payment_form_<?php echo $code ?>" data-solapayments style="display:none">
+    <?php if ($cards): ?>
+        <div class="sp-saved" role="radiogroup" aria-label="<?php echo $this->__('Saved cards') ?>">
+            <?php foreach ($cards as $card): ?>
+                <label class="sp-saved__card">
+                    <input type="radio" name="payment[solapayments_card_id]" value="<?php echo (int) $card->getId() ?>" data-sp-card <?php if ((int) $card->getId() === $selected): ?>checked<?php endif ?>>
+                    <span class="sp-brand sp-brand--<?php echo $this->escapeHtml(strtolower(preg_replace('/[^a-z]/i', '', (string) $card->getCardType()))) ?>"><?php echo $this->escapeHtml($card->getCardType() ?: $this->__('Card')) ?></span>
+                    <span class="sp-saved__number">•••• <?php echo $this->escapeHtml($card->getLast4()) ?></span>
+                    <span class="sp-saved__exp"><?php echo $this->__('Expires %s', $card->getExpiryLabel()) ?></span>
+                </label>
+            <?php endforeach ?>
+            <label class="sp-saved__card">
+                <input type="radio" name="payment[solapayments_card_id]" value="" data-sp-card <?php if (!$selected): ?>checked<?php endif ?>>
+                <span><?php echo $this->__('Use a new card') ?></span>
+            </label>
+        </div>
+    <?php endif ?>
+
+    <div class="sp-new" data-sp-new <?php if ($selected): ?>hidden<?php endif ?>>
+        <div class="sp-field sp-field--card" data-sp-field="card-number">
+            <iframe data-ifields-id="card-number" data-ifields-placeholder="<?php echo $this->escapeHtml($this->__('Card number')) ?>" src="<?php echo $ifield ?>" title="<?php echo $this->__('Card number') ?>" frameborder="0"></iframe>
+        </div>
+        <div class="sp-row">
+            <div class="sp-field">
+                <input type="text" class="sp-input" data-sp-expiry inputmode="numeric" autocomplete="cc-exp" maxlength="7" placeholder="<?php echo $this->__('Expiration date (MM / YY)') ?>" aria-label="<?php echo $this->__('Expiration date (MM / YY)') ?>">
+            </div>
+            <div class="sp-field" data-sp-field="cvv">
+                <iframe data-ifields-id="cvv" data-ifields-placeholder="<?php echo $this->escapeHtml($this->__('Security code')) ?>" src="<?php echo $ifield ?>" title="<?php echo $this->__('Security code') ?>" frameborder="0"></iframe>
+            </div>
+        </div>
+        <input type="hidden" name="payment[xCardNum]" data-ifields-id="card-number-token">
+        <input type="hidden" name="payment[xCVV]" data-ifields-id="cvv-token">
+        <input type="hidden" name="payment[cc_exp_month]" data-sp-exp-month>
+        <input type="hidden" name="payment[cc_exp_year]" data-sp-exp-year>
+        <p class="sp-error" data-ifields-id="card-data-error" role="alert"></p>
+        <?php if ($this->canSaveCard()): ?>
+            <label class="sp-check">
+                <input type="checkbox" name="payment[solapayments_save_card]" value="1" checked>
+                <span><?php echo $this->__('Save this card for the customer') ?></span>
+            </label>
+        <?php endif ?>
+    </div>
+
+    <label class="sp-check sp-duplicate" data-sp-duplicate hidden>
+        <input type="checkbox" name="payment[solapayments_allow_duplicate]" value="1">
+        <span><?php echo $this->__('Yes, I want to place this order even though it looks like one I just placed') ?></span>
+    </label>
+</div>
