@@ -26,12 +26,20 @@ class YSRTech_Solapayments_Model_Request
             'xTimeoutSeconds' => 55,
             'xAllowDuplicate' => $payment->getAdditionalInformation('allow_duplicate') ? 'true' : null,
         ];
-        if ($command === 'cc:authonly' && $helper->isSplitCapture($order->getStoreId())) {
+        $method = $payment->getMethodInstance();
+        if ($command === 'cc:authonly' && $helper->isSplitCapture($order->getStoreId(), $method->getCode())) {
             $fields['xRequireSplitCapturable'] = 1;
         }
 
         $card = $this->getSavedCard($payment);
-        if ($card) {
+        if ($method instanceof YSRTech_Solapayments_Model_Method_Wallet) {
+            $token = YSRTech_Solapayments_Model_Method_Wallet::getWalletToken();
+            if (!$token) {
+                Mage::throwException($helper->__('Please pay with the %s button.', $method->getTitle()));
+            }
+            $fields['xCardNum'] = $token;
+            $fields['xDigitalWalletType'] = $method->getWalletType();
+        } elseif ($card) {
             $fields['xToken'] = $card->getToken();
         } else {
             $posted = YSRTech_Solapayments_Model_Method_Card::getPostedCard();
@@ -52,7 +60,7 @@ class YSRTech_Solapayments_Model_Request
     {
         $helper = Mage::helper('solapayments');
         $fields = [
-            'xCommand'       => $helper->isSplitCapture($payment->getOrder()->getStoreId()) ? 'cc:splitcapture' : 'cc:capture',
+            'xCommand'       => $helper->isSplitCapture($payment->getOrder()->getStoreId(), $payment->getMethod()) ? 'cc:splitcapture' : 'cc:capture',
             'xAmount'        => $helper->formatPrice($amount),
             'xRefNum'        => $refNum,
             'xIgnoreInvoice' => 'true',

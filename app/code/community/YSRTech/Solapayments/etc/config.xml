@@ -10,7 +10,7 @@
 <config>
     <modules>
         <YSRTech_Solapayments>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
         </YSRTech_Solapayments>
     </modules>
     <global>
@@ -209,7 +209,34 @@
                 <giftcard_title>Gift card</giftcard_title>
                 <giftcard_url>https://x1.cardknox.com/gatewayjson</giftcard_url>
                 <cardknox_transaction_key backend_model="adminhtml/system_config_backend_encrypted"/>
+                <token_key/>
+                <ifields_version>3.5.2607.1401</ifields_version>
             </solapayments>
+            <solapayments_googlepay>
+                <active>0</active>
+                <model>solapayments/method_googlepay</model>
+                <title>Google Pay</title>
+                <payment_action>authorize</payment_action>
+                <order_status>processing</order_status>
+                <merchant_name/>
+                <environment>TEST</environment>
+                <button_color>default</button_color>
+                <button_type>pay</button_type>
+                <allowspecific>0</allowspecific>
+                <sort_order>3</sort_order>
+            </solapayments_googlepay>
+            <solapayments_applepay>
+                <active>0</active>
+                <model>solapayments/method_applepay</model>
+                <title>Apple Pay</title>
+                <payment_action>authorize</payment_action>
+                <order_status>processing</order_status>
+                <merchant_identifier>merchant.cardknox.com</merchant_identifier>
+                <button_color>black</button_color>
+                <button_type>pay</button_type>
+                <allowspecific>0</allowspecific>
+                <sort_order>4</sort_order>
+            </solapayments_applepay>
         </payment>
     </default>
 </config>

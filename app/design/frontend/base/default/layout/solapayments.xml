@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    YSRTech_Solapayments storefront: card form script on checkout pages
+    YSRTech_Solapayments storefront: card form script on checkout pages, Google Pay / Apple Pay buttons
     (YSRTech_UnifiedCheckout page, and the standard onepage checkout), Saved cards in My Account.
 -->
 <layout version="0.1.0">
@@ -16,6 +16,7 @@
         <update handle="solapayments_checkout_assets"/>
         <reference name="head">
             <action method="addItem"><type>skin_js</type><name>solapayments/giftcard.js</name></action>
+            <action method="addItem"><type>skin_js</type><name>solapayments/wallet.js</name></action>
         </reference>
     </ysrtech_unifiedcheckout_index>
 

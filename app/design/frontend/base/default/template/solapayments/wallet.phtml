@@ -1,0 +1,29 @@
+<?php
+/**
+ * Google Pay / Apple Pay button in the payment step (Cardknox iFields). The order is placed when
+ * the customer approves the payment in the wallet's sheet.
+ *
+ * @var YSRTech_Solapayments_Block_Wallet $this
+ */
+$code   = $this->getMethodCode();
+$wallet = $this->getWalletKey();
+?>
+<div class="sp-wallet" id="payment_form_<?php echo $code ?>" data-sp-wallet="<?php echo $wallet ?>" style="display:none">
+    <p class="sp-wallet__note"><?php echo $this->__('Press the button below and approve the payment to place your order.') ?></p>
+    <?php if ($wallet === 'googlepay'): ?>
+        <div class="sp-wallet__button sp-wallet__button--google" data-sp-wallet-button hidden>
+            <iframe id="igp" data-ifields-id="igp" data-ifields-oninit="solapaymentsWallets.googleInit"
+                    src="<?php echo $this->escapeHtml($this->getGooglePayFrameUrl()) ?>"
+                    allowpaymentrequest allow="payment"
+                    sandbox="allow-popups allow-modals allow-scripts allow-same-origin allow-forms allow-popups-to-escape-sandbox allow-top-navigation"
+                    title="<?php echo $this->__('Google Pay') ?>"></iframe>
+        </div>
+    <?php else: ?>
+        <div class="sp-wallet__button sp-wallet__button--apple" id="ap-container" data-sp-wallet-button hidden></div>
+    <?php endif ?>
+    <p class="sp-wallet__error" data-sp-wallet-error hidden></p>
+    <label class="sp-check sp-duplicate" data-sp-duplicate hidden>
+        <input type="checkbox" name="payment[solapayments_allow_duplicate]" value="1">
+        <span><?php echo $this->__('Yes, I want to place this order even though it looks like one I just placed') ?></span>
+    </label>
+</div>

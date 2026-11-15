@@ -56,3 +56,13 @@
 .sp-giftcard__balance { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--ysc-muted, #707070); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .sp-giftcard__message { margin: 8px 0 0; font-size: 13px; }
 .sp-giftcard__message.is-error { color: var(--ysc-error, #dd1d1d); }
+
+/* Google Pay / Apple Pay in the payment step */
+.sp-wallet { display: grid; gap: 12px; }
+.sp-wallet [hidden] { display: none !important; }
+.sp-wallet__note { margin: 0; color: var(--ysc-muted, #707070); font-size: 14px; }
+.sp-wallet__button { width: 100%; max-width: 360px; height: 48px; }
+.sp-wallet__button iframe { display: block; width: 100%; height: 48px; border: 0; border-radius: 6px; overflow: hidden; }
+.sp-wallet__button--apple .apple-pay-button { width: 100%; height: 48px; }
+.sp-wallet__error { margin: 0; color: var(--ysc-error, #dd1d1d); font-size: 13px; }
+.sp-wallet .sp-check { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 14px; font-weight: 400; cursor: pointer; }

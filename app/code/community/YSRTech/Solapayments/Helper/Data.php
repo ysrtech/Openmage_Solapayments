@@ -5,7 +5,7 @@
  */
 class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    public const VERSION = '2.1.0';
+    public const VERSION = '2.2.0';
     public const XML_PATH = 'payment/solapayments/';
     public const DEFAULT_GATEWAY = 'https://x1.cardknox.com/gateway';
 
@@ -35,10 +35,33 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
         return $this->getConfigFlag('vault_active', $store);
     }
 
-    public function isSplitCapture($store = null)
+    /**
+     * Split capture (setting of the card method) for a method whose payment action is
+     * "authorize" (the card method, or a wallet with its own payment action).
+     */
+    public function isSplitCapture($store = null, $methodCode = 'solapayments')
     {
         return $this->getConfigFlag('split_capture_enabled', $store)
-            && $this->getConfig('payment_action', $store) === Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE;
+            && Mage::getStoreConfig('payment/' . $methodCode . '/payment_action', $store) === Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE;
+    }
+
+    /**
+     * iFields key (token key, public): only the Google Pay and Apple Pay buttons use iFields.
+     */
+    public function getTokenKey($store = null)
+    {
+        return trim((string) $this->getConfig('token_key', $store));
+    }
+
+    public function getIfieldsVersion($store = null)
+    {
+        $version = trim((string) $this->getConfig('ifields_version', $store));
+        return preg_match('/^[0-9.]+$/', $version) ? $version : '3.5.2607.1401';
+    }
+
+    public function getIfieldsUrl($file, $store = null)
+    {
+        return 'https://cdn.cardknox.com/ifields/' . $this->getIfieldsVersion($store) . '/' . $file;
     }
 
     public function getGatewayUrl($store = null)

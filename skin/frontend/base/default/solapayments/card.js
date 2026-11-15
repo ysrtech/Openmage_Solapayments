@@ -129,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // a duplicate decline offers "place it anyway"
     document.addEventListener('unifiedcheckout:error', function (e) {
         var dup = q('[data-sp-duplicate]');
+        if (window.UnifiedCheckout && window.UnifiedCheckout.selectedMethod() !== CODE) { return; }
         if (dup && (e.detail.message || '').indexOf(cfg.text.duplicate) === 0) { dup.hidden = false; }
     });
 });

@@ -1,6 +1,6 @@
 {
     "name": "ysrtech/openmage-solapayments",
-    "description": "Sola Payments (Cardknox) for OpenMage: saved cards, split capture, Level 3, refunds and voids; ported from Sola's Magento 2 module.",
+    "description": "Sola Payments (Cardknox) for OpenMage: saved cards, Google Pay, Apple Pay, split capture, Level 3, refunds and voids; ported from Sola's Magento 2 module.",
     "type": "magento-module",
     "license": "MIT",
     "require": {
