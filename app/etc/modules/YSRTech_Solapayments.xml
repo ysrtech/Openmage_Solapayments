@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <YSRTech_Solapayments>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Payment/>
+                <Mage_Sales/>
+                <Mage_Checkout/>
+            </depends>
+        </YSRTech_Solapayments>
+    </modules>
+</config>
