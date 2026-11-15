@@ -106,19 +106,26 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
             return;
         }
         if (is_array($data)) {
-            foreach (['xKey', 'xCardNum', 'xCVV', 'xToken', 'xExp'] as $secret) {
-                if (!empty($data[$secret])) {
-                    $data[$secret] = substr((string) $data[$secret], 0, 4) . '…';
-                }
-            }
-            $data = print_r($data, true);
+            $data = print_r($this->maskSecrets($data), true);
         }
         Mage::log($data, Zend_Log::DEBUG, 'solapayments.log', true);
     }
 
     /**
-     * Gift card number for display: last four characters only.
+     * Keys, card numbers / tokens and security codes masked, at any depth.
      */
+    public function maskSecrets(array $data)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->maskSecrets($value);
+            } elseif (in_array($key, ['xKey', 'xCardNum', 'xCVV', 'xToken', 'xExp', 'xCavv'], true) && (string) $value !== '') {
+                $data[$key] = substr((string) $value, 0, 4) . '…';
+            }
+        }
+        return $data;
+    }
+
     public function maskGiftcard($code)
     {
         $code = preg_replace('/\s+/', '', (string) $code);

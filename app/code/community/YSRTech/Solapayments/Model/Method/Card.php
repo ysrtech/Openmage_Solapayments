@@ -134,9 +134,12 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
             return $this;
         }
         $request = Mage::getModel('solapayments/request');
+        $authorization = $this->_refNum($authorization);
         $response = $this->_api()->request($request->buildCapture($payment, $amount, $authorization), $payment->getOrder()->getStoreId());
         $this->_requireApproved($response);
-        $payment->setTransactionId($response['xRefNum'])->setIsTransactionClosed(0);
+        // Cardknox answers a capture with the authorization's reference number: keep both records
+        $txnId = (string) $response['xRefNum'] === (string) $authorization ? $authorization . '-capture' : $response['xRefNum'];
+        $payment->setTransactionId($txnId)->setIsTransactionClosed(0);
         if (!empty($response['xBatch'])) {
             $payment->setAdditionalInformation('xBatch', $response['xBatch']);
         }
@@ -151,7 +154,7 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
         $response = $this->_api()->request([
             'xCommand' => $whole ? 'cc:voidrefund' : 'cc:refund',
             'xAmount'  => $helper->formatPrice($amount),
-            'xRefNum'  => $payment->getParentTransactionId() ?: $payment->getLastTransId(),
+            'xRefNum'  => $this->_refNum($payment->getParentTransactionId() ?: $payment->getLastTransId()),
         ], $order->getStoreId());
         $this->_requireApproved($response);
         $invoice = $payment->getCreditmemo() ? $payment->getCreditmemo()->getInvoice() : null;
@@ -163,7 +166,7 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
 
     public function void(Varien_Object $payment)
     {
-        $refNum = $payment->getParentTransactionId() ?: $payment->getLastTransId();
+        $refNum = $this->_refNum($payment->getParentTransactionId() ?: $payment->getLastTransId());
         $response = $this->_api()->request(['xCommand' => 'cc:void', 'xRefNum' => $refNum], $payment->getOrder()->getStoreId());
         $this->_requireApproved($response);
         $payment->setTransactionId(($response['xRefNum'] ?? $refNum) . '-void')
@@ -337,6 +340,14 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
     protected function _clearVerified()
     {
         Mage::getSingleton('checkout/session')->unsetData(self::SESSION_VERIFIED);
+    }
+
+    /**
+     * Cardknox reference number of a transaction id ("123-capture" -> "123").
+     */
+    protected function _refNum($transactionId)
+    {
+        return preg_replace('/-(capture|void|refund)$/', '', (string) $transactionId);
     }
 
     /**
