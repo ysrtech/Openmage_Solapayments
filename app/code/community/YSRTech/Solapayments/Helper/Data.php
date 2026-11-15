@@ -22,14 +22,6 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * iFields key (public, used in the browser).
-     */
-    public function getTokenKey($store = null)
-    {
-        return trim((string) $this->getConfig('cardknox_token_key', $store));
-    }
-
-    /**
      * Transaction key (secret, server only). Stored encrypted; getStoreConfig() decrypts it
      * (backend_model attribute in config.xml).
      */
@@ -38,25 +30,9 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
         return trim((string) $this->getConfig('cardknox_transaction_key', $store));
     }
 
-    public function getIfieldsVersion($store = null)
-    {
-        return (string) ($this->getConfig('ifields_version', $store) ?: '3.5.2607.1401');
-    }
-
-    public function getIfieldsUrl($file, $store = null)
-    {
-        return 'https://cdn.cardknox.com/ifields/' . $this->getIfieldsVersion($store) . '/' . $file;
-    }
-
     public function isVaultEnabled($store = null)
     {
         return $this->getConfigFlag('vault_active', $store);
-    }
-
-    public function isThreeDsEnabled($store = null)
-    {
-        return $this->getConfigFlag('cardknox_enable_three_d_secure', $store)
-            && (string) $this->getConfig('cardknox_three_d_secure_environment', $store) !== '';
     }
 
     public function isSplitCapture($store = null)
@@ -97,8 +73,8 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Debug log (var/log/solapayments.log). Card data never reaches the server (iFields), and
-     * keys are masked before logging.
+     * Debug log (var/log/solapayments.log). Card numbers, security codes, tokens and keys are
+     * masked before logging.
      */
     public function log($data, $store = null)
     {
@@ -119,7 +95,9 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->maskSecrets($value);
-            } elseif (in_array($key, ['xKey', 'xCardNum', 'xCVV', 'xToken', 'xExp', 'xCavv'], true) && (string) $value !== '') {
+            } elseif ($key === 'xCVV' && (string) $value !== '') {
+                $data[$key] = '***';
+            } elseif (in_array($key, ['xKey', 'xCardNum', 'xToken', 'xExp'], true) && (string) $value !== '') {
                 $data[$key] = substr((string) $value, 0, 4) . '…';
             }
         }
@@ -130,5 +108,51 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $code = preg_replace('/\s+/', '', (string) $code);
         return strlen($code) > 4 ? '•••• ' . substr($code, -4) : $code;
+    }
+
+    /**
+     * Luhn check and length (13-19 digits).
+     */
+    public function isValidCardNumber($number)
+    {
+        $number = preg_replace('/\D/', '', (string) $number);
+        $length = strlen($number);
+        if ($length < 13 || $length > 19) {
+            return false;
+        }
+        $sum = 0;
+        for ($i = 0; $i < $length; $i++) {
+            $digit = (int) $number[$length - 1 - $i];
+            if ($i % 2) {
+                $digit *= 2;
+                if ($digit > 9) {
+                    $digit -= 9;
+                }
+            }
+            $sum += $digit;
+        }
+        return $sum % 10 === 0;
+    }
+
+    /**
+     * Card brand from the number (as Cardknox names it), '' when unknown.
+     */
+    public function getCardBrand($number)
+    {
+        $number = preg_replace('/\D/', '', (string) $number);
+        $brands = [
+            'Amex'       => '/^3[47]/',
+            'Visa'       => '/^4/',
+            'MasterCard' => '/^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/',
+            'Discover'   => '/^(6011|65|64[4-9]|622)/',
+            'Diners'     => '/^(36|30[0-5]|38)/',
+            'JCB'        => '/^35/',
+        ];
+        foreach ($brands as $brand => $pattern) {
+            if (preg_match($pattern, $number)) {
+                return $brand;
+            }
+        }
+        return '';
     }
 }

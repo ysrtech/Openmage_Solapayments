@@ -20,8 +20,7 @@
 .sp-field { position: relative; height: 48px; overflow: hidden; border: 1px solid var(--sp-border); border-radius: var(--sp-radius); background: #fff;
             transition: border-color .15s, box-shadow .15s; }
 .sp-field:focus-within { border-color: var(--sp-accent); box-shadow: 0 0 0 1px var(--sp-accent); }
-.sp-field.is-invalid, .sp-field:has(.sp-input.is-invalid) { border-color: var(--sp-error); box-shadow: 0 0 0 1px var(--sp-error); }
-.sp-field iframe { display: block; width: 100%; height: 46px; border: 0; }
+.sp-field.is-invalid { border-color: var(--sp-error); box-shadow: 0 0 0 1px var(--sp-error); }
 .sp-input { display: block; width: 100%; height: 46px; margin: 0; padding: 0 12px; border: 0; outline: none; background: transparent;
             font: inherit; font-size: 15px; box-shadow: none; }
 .sp-field--card::after { content: ""; position: absolute; top: 50%; right: 12px; width: 18px; height: 18px; transform: translateY(-50%); opacity: .5;

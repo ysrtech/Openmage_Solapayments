@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Payment form: the customer's saved cards, or a new card in Cardknox iFields (card number and
- * security code are iframes served by Cardknox), expiry, and "Save this card".
+ * Payment form: the customer's saved cards, or a new card (number, expiry, security code) and
+ * "Save this card".
  */
 class YSRTech_Solapayments_Block_Form extends Mage_Payment_Block_Form
 {
@@ -65,8 +65,4 @@ class YSRTech_Solapayments_Block_Form extends Mage_Payment_Block_Form
         return $this->getCustomerId() > 0 && Mage::helper('solapayments')->isVaultEnabled();
     }
 
-    public function getIfieldUrl()
-    {
-        return Mage::helper('solapayments')->getIfieldsUrl('ifield.htm');
-    }
 }

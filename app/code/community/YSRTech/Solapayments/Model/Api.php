@@ -4,7 +4,7 @@
  * Cardknox gateway client: posts form fields, returns the parsed answer.
  *
  * Every request carries xKey (transaction key), xVersion, xSoftwareName/Version, xIP.
- * Answer fields of note: xResult (A approved, D declined, E error, V verify / 3DS),
+ * Answer fields of note: xResult (A approved, D declined, E error),
  * xStatus, xError, xErrorCode, xRefNum, xToken, xMaskedCardNumber, xCardType, xExp,
  * xAuthCode, xAvsResult, xCvvResult, xBatch.
  */
@@ -18,7 +18,7 @@ class YSRTech_Solapayments_Model_Api
     /**
      * @param array       $fields request fields (without the common ones)
      * @param mixed       $store
-     * @param string|null $url    another endpoint (3D Secure verify), default the gateway URL
+     * @param string|null $url    another endpoint, default the gateway URL
      * @return array answer fields
      * @throws Mage_Core_Exception when the gateway cannot be reached
      */

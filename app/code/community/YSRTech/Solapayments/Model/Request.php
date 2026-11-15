@@ -34,8 +34,12 @@ class YSRTech_Solapayments_Model_Request
         if ($card) {
             $fields['xToken'] = $card->getToken();
         } else {
-            $fields['xCardNum'] = $payment->getAdditionalInformation('xCardNum');
-            $fields['xCVV']     = $payment->getAdditionalInformation('xCVV');
+            $posted = YSRTech_Solapayments_Model_Method_Card::getPostedCard();
+            if (!$posted) {
+                Mage::throwException(Mage::helper('solapayments')->__('Please enter your card details again.'));
+            }
+            $fields['xCardNum'] = $posted['number'];
+            $fields['xCVV']     = $posted['cvv'];
             $fields['xExp']     = sprintf('%02d%02d', (int) $payment->getCcExpMonth(), (int) $payment->getCcExpYear() % 100);
         }
         return array_merge($fields, $this->getAddressFields($order), $this->getLevel3Fields($payment, null));

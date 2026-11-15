@@ -3,28 +3,24 @@
 /**
  * Sola Payments card method ("solapayments").
  *
- * The customer pays with a new card entered in Cardknox iFields (the browser sends single-use
- * tokens xCardNum / xCVV and the expiry) or with one of their saved cards (Cardknox xToken).
- * After a successful payment a new card is saved when the customer ticked "Save this card".
+ * The customer pays with a card typed into the payment form (number, expiry, security code) or
+ * with one of their saved cards (Cardknox xToken). After a successful payment a new card is
+ * saved when the customer ticked "Save this card" (only Sola's token and the card's type, last
+ * four digits and expiry are kept).
+ *
+ * The card number and security code are kept in memory for the request that places the order
+ * (self::$_postedCard) and sent to Cardknox; they are never stored on the quote or order, in
+ * additional information, or in logs.
  *
  *   authorize            cc:authonly (xRequireSplitCapturable with split capture)
  *   capture, no auth     cc:sale            (payment action "authorize and capture")
  *   capture of an auth   cc:capture, or cc:splitcapture with split capture
  *   refund               cc:refund, or cc:voidrefund for the whole order
  *   void / cancel        cc:void
- *
- * 3D Secure: when the gateway answers xResult=V the order is not placed; the checkout runs the
- * bank's challenge in the browser (iFields), the result is verified with Cardknox
- * (ThreedsController) and kept in the checkout session, and the order is placed again: this
- * method then uses the verified transaction instead of charging a second time.
  */
 class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_Abstract
 {
     public const CODE = 'solapayments';
-    /** checkout session: transaction approved by 3D Secure verification, ['quote_id', 'amount', 'response'] */
-    public const SESSION_VERIFIED = 'solapayments_3ds_verified';
-    /** checkout session key read by YSRTech_UnifiedCheckout (OnepageController::CLIENT_ACTION) */
-    public const SESSION_CLIENT_ACTION = 'unifiedcheckout_client_action';
 
     /** answer fields kept on the payment (shown in the admin) */
     public const INFO_KEYS = ['xMaskedCardNumber', 'xCardType', 'xExp', 'xAuthCode', 'xAuthAmount', 'xBatch', 'xRefNum',
@@ -46,18 +42,29 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
     protected $_canUseForMultishipping  = false;
     protected $_canSaveCc               = false;
 
+    /** @var array|null ['number' => digits, 'cvv' => digits] of the card posted in this request */
+    protected static $_postedCard = null;
+
+    /**
+     * The card number and security code posted in this request (never stored).
+     */
+    public static function getPostedCard()
+    {
+        return self::$_postedCard;
+    }
+
     // ------------------------------------------------------------------ checkout data
 
     public function isAvailable($quote = null)
     {
         $helper = Mage::helper('solapayments');
         $store = $quote ? $quote->getStoreId() : null;
-        return parent::isAvailable($quote) && $helper->getTransactionKey($store) !== '' && $helper->getTokenKey($store) !== '';
+        return parent::isAvailable($quote) && $helper->getTransactionKey($store) !== '';
     }
 
     /**
-     * Posted fields (payment[...]): solapayments_card_id (a saved card, or empty for a new
-     * card), xCardNum / xCVV (iFields tokens), cc_exp_month / cc_exp_year, solapayments_save_card,
+     * Posted fields (payment[...]): solapayments_card_id (a saved card, or empty for a new card),
+     * cc_number, cc_cid, cc_exp_month, cc_exp_year, solapayments_save_card,
      * solapayments_allow_duplicate.
      */
     public function assignData($data)
@@ -70,22 +77,26 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
         $info->setAdditionalInformation('card_id', $cardId ?: null);
         $info->setAdditionalInformation('allow_duplicate', $data->getData('solapayments_allow_duplicate') ? 1 : null);
         if ($cardId) {
-            $info->setAdditionalInformation('xCardNum', null)->setAdditionalInformation('xCVV', null);
+            self::$_postedCard = null;
             $info->setAdditionalInformation('save_card', null);
             $card = Mage::getModel('solapayments/request')->getSavedCard($info);
             if ($card) {
                 $info->setCcType($card->getCardType())->setCcLast4($card->getLast4())
                     ->setCcExpMonth($card->getExpMonth())->setCcExpYear($card->getExpYear());
             }
-        } else {
-            $info->setAdditionalInformation('xCardNum', (string) $data->getData('xCardNum'));
-            $info->setAdditionalInformation('xCVV', (string) $data->getData('xCVV'));
-            $info->setAdditionalInformation('save_card', $data->getData('solapayments_save_card') ? 1 : null);
-            $year = (int) $data->getData('cc_exp_year');
-            $info->setCcExpMonth((int) $data->getData('cc_exp_month'))
-                ->setCcExpYear($year && $year < 100 ? 2000 + $year : $year)
-                ->setCcLast4(null)->setCcType(null);
+            return $this;
         }
+        $number = preg_replace('/\D/', '', (string) $data->getData('cc_number'));
+        $cvv = preg_replace('/\D/', '', (string) $data->getData('cc_cid'));
+        if ($number !== '') {
+            self::$_postedCard = ['number' => $number, 'cvv' => $cvv];
+        }
+        $info->setAdditionalInformation('save_card', $data->getData('solapayments_save_card') ? 1 : null);
+        $year = (int) $data->getData('cc_exp_year');
+        $info->setCcExpMonth((int) $data->getData('cc_exp_month'))
+            ->setCcExpYear($year && $year < 100 ? 2000 + $year : $year)
+            ->setCcLast4($number !== '' ? substr($number, -4) : null)
+            ->setCcType($number !== '' ? Mage::helper('solapayments')->getCardBrand($number) : null);
         return $this;
     }
 
@@ -104,11 +115,12 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
             }
             return $this;
         }
-        if ($this->_getVerified()) {
-            return $this;   // 3D Secure already approved this payment
+        $card = self::$_postedCard;
+        if (!$card || !Mage::helper('solapayments')->isValidCardNumber($card['number'])) {
+            Mage::throwException($helper->__('Please enter a valid card number.'));
         }
-        if (!$info->getAdditionalInformation('xCardNum') || !$info->getAdditionalInformation('xCVV')) {
-            Mage::throwException($helper->__('Please enter your card number and security code.'));
+        if (!preg_match('/^\d{3,4}$/', $card['cvv'])) {
+            Mage::throwException($helper->__('Please enter the security code (3 or 4 digits on the card).'));
         }
         $month = (int) $info->getCcExpMonth();
         $year = (int) $info->getCcExpYear();
@@ -191,23 +203,10 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
     protected function _newCardTransaction(Mage_Sales_Model_Order_Payment $payment, $amount, $command)
     {
         $order = $payment->getOrder();
-        $verified = $this->_getVerified();
-        if ($verified && abs((float) $verified['amount'] - (float) $amount) < 0.005) {
-            // approved by 3D Secure verification: use that transaction, do not charge again
-            $this->_clearVerified();
-            $this->_applyApproved($payment, $verified['response']);
-            return;
-        }
         $request = Mage::getModel('solapayments/request');
         $card = $request->getSavedCard($payment);
         $response = $this->_api()->request($request->buildCardTransaction($payment, $amount, $command), $order->getStoreId());
 
-        if (($response['xResult'] ?? '') === YSRTech_Solapayments_Model_Api::RESULT_VERIFY
-            && Mage::helper('solapayments')->isThreeDsEnabled($order->getStoreId())
-            && !Mage::app()->getStore()->isAdmin()
-        ) {
-            $this->_requestThreeDs($payment, $amount, $response);
-        }
         $this->_requireApproved($response);
         $this->_applyApproved($payment, $response);
         if ($card) {
@@ -244,9 +243,7 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
         if ($payment->getAdditionalInformation('save_card')) {
             $this->_saveCard($payment, $response);
         }
-        // single-use tokens are of no further use (not unsAdditionalInformation(): for a key that
-        // is not set it clears all additional information)
-        $payment->setAdditionalInformation('xCardNum', null)->setAdditionalInformation('xCVV', null);
+        self::$_postedCard = null;   // not needed any more
     }
 
     /**
@@ -292,27 +289,6 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
     }
 
     /**
-     * Stops order placement and asks the checkout to run the bank's 3D Secure challenge.
-     */
-    protected function _requestThreeDs(Mage_Sales_Model_Order_Payment $payment, $amount, array $response)
-    {
-        $session = Mage::getSingleton('checkout/session');
-        unset($response['xKey']);
-        $session->setData(self::SESSION_CLIENT_ACTION, [
-            'type'     => 'solapayments_3ds',
-            'response' => $response,
-            'amount'   => (float) $amount,
-        ]);
-        $session->setData('solapayments_3ds_pending', [
-            'quote_id' => (int) $session->getQuoteId(),
-            'amount'   => (float) $amount,
-            'invoice'  => $payment->getOrder()->getIncrementId(),
-            'save_card' => $payment->getAdditionalInformation('save_card') ? 1 : 0,
-        ]);
-        Mage::throwException(Mage::helper('solapayments')->__('Your bank asks you to confirm this payment.'));
-    }
-
-    /**
      * Throws the customer-facing message unless the gateway approved.
      */
     protected function _requireApproved(array $response)
@@ -323,23 +299,6 @@ class YSRTech_Solapayments_Model_Method_Card extends Mage_Payment_Model_Method_A
         $map = Mage::getModel('solapayments/errorMap');
         Mage::log(sprintf('Sola Payments declined: %s %s (%s)', $response['xErrorCode'] ?? '', $response['xError'] ?? '', $response['xRefNum'] ?? ''), Zend_Log::WARN, 'solapayments.log', true);
         Mage::throwException($map->getMessage($response));
-    }
-
-    /**
-     * Transaction approved by 3D Secure for the current quote, if any.
-     */
-    protected function _getVerified()
-    {
-        $verified = Mage::getSingleton('checkout/session')->getData(self::SESSION_VERIFIED);
-        if (!is_array($verified) || (int) ($verified['quote_id'] ?? 0) !== (int) Mage::getSingleton('checkout/session')->getQuoteId()) {
-            return null;
-        }
-        return $verified;
-    }
-
-    protected function _clearVerified()
-    {
-        Mage::getSingleton('checkout/session')->unsetData(self::SESSION_VERIFIED);
     }
 
     /**

@@ -1,15 +1,14 @@
 <?php
 /**
- * Sola Payments card form in admin Create Order: the customer's saved cards, or a new card
- * in Cardknox iFields. Behaviour: skin (adminhtml) solapayments/admin.js. Card number and security code are iframes served by
- * Cardknox; this page only ever receives single-use tokens (payment[xCardNum], payment[xCVV]).
+ * Sola Payments card form in admin Create Order: the customer's saved cards, or a new card.
+ * Behaviour: skin (adminhtml) solapayments/admin.js. The card number and security code are sent to
+ * Sola with the order and never stored.
  *
  * @var YSRTech_Solapayments_Block_Form $this
  */
 $code     = $this->getMethodCode();
 $cards    = $this->getSavedCards();
 $selected = $this->getSelectedCardId($cards);
-$ifield   = $this->getIfieldUrl();
 ?>
 <div class="sp-form sp-form--admin" id="payment_form_<?php echo $code ?>" data-solapayments style="display:none">
     <?php if ($cards): ?>
@@ -31,21 +30,20 @@ $ifield   = $this->getIfieldUrl();
 
     <div class="sp-new" data-sp-new <?php if ($selected): ?>hidden<?php endif ?>>
         <div class="sp-field sp-field--card" data-sp-field="card-number">
-            <iframe data-ifields-id="card-number" data-ifields-placeholder="<?php echo $this->escapeHtml($this->__('Card number')) ?>" src="<?php echo $ifield ?>" title="<?php echo $this->__('Card number') ?>" frameborder="0"></iframe>
+            <input type="text" name="payment[cc_number]" class="sp-input" data-sp-number inputmode="numeric" autocomplete="cc-number" maxlength="23"
+                   placeholder="<?php echo $this->__('Card number') ?>" aria-label="<?php echo $this->__('Card number') ?>">
         </div>
         <div class="sp-row">
             <div class="sp-field">
                 <input type="text" class="sp-input" data-sp-expiry inputmode="numeric" autocomplete="cc-exp" maxlength="7" placeholder="<?php echo $this->__('Expiration date (MM / YY)') ?>" aria-label="<?php echo $this->__('Expiration date (MM / YY)') ?>">
             </div>
             <div class="sp-field" data-sp-field="cvv">
-                <iframe data-ifields-id="cvv" data-ifields-placeholder="<?php echo $this->escapeHtml($this->__('Security code')) ?>" src="<?php echo $ifield ?>" title="<?php echo $this->__('Security code') ?>" frameborder="0"></iframe>
+                <input type="text" name="payment[cc_cid]" class="sp-input" data-sp-cvv inputmode="numeric" autocomplete="cc-csc" maxlength="4"
+                       placeholder="<?php echo $this->__('Security code') ?>" aria-label="<?php echo $this->__('Security code') ?>">
             </div>
         </div>
-        <input type="hidden" name="payment[xCardNum]" data-ifields-id="card-number-token">
-        <input type="hidden" name="payment[xCVV]" data-ifields-id="cvv-token">
         <input type="hidden" name="payment[cc_exp_month]" data-sp-exp-month>
         <input type="hidden" name="payment[cc_exp_year]" data-sp-exp-year>
-        <p class="sp-error" data-ifields-id="card-data-error" role="alert"></p>
         <?php if ($this->canSaveCard()): ?>
             <label class="sp-check">
                 <input type="checkbox" name="payment[solapayments_save_card]" value="1" checked>

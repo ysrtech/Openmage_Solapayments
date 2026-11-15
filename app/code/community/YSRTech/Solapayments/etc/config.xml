@@ -3,9 +3,9 @@
     YSRTech_Solapayments: Sola Payments (Cardknox) for OpenMage, ported from Sola's Magento 2
     module (cardknox/magento2_cardknox, MIT).
 
-    Method "solapayments": cards entered in Cardknox iFields (card data never reaches this
-    server; the browser gets single-use tokens), or a saved card (Cardknox token) of the
-    customer. 3D Secure, split capture, Level 3 data, refunds and voids from the admin.
+    Method "solapayments": a card entered in the payment form, or a saved card (Cardknox token)
+    of the customer. Split capture, Level 3 data, refunds and voids from the admin, Sola gift
+    cards.
 -->
 <config>
     <modules>
@@ -202,18 +202,13 @@
                 <split_capture_enabled>0</split_capture_enabled>
                 <vault_active>1</vault_active>
                 <level3_enabled>0</level3_enabled>
-                <cardknox_enable_three_d_secure>0</cardknox_enable_three_d_secure>
-                <cardknox_three_d_secure_environment>production</cardknox_three_d_secure_environment>
                 <cgi_url>https://x1.cardknox.com/gateway</cgi_url>
-                <three_ds_verify_url>https://x1.cardknox.com/verify</three_ds_verify_url>
-                <ifields_version>3.5.2607.1401</ifields_version>
                 <debug>0</debug>
                 <allowspecific>0</allowspecific>
                 <giftcard_enabled>0</giftcard_enabled>
                 <giftcard_title>Gift card</giftcard_title>
                 <giftcard_url>https://x1.cardknox.com/gatewayjson</giftcard_url>
                 <cardknox_transaction_key backend_model="adminhtml/system_config_backend_encrypted"/>
-                <cardknox_token_key backend_model="adminhtml/system_config_backend_encrypted"/>
             </solapayments>
         </payment>
     </default>
