@@ -1,0 +1,35 @@
+<?php
+/**
+ * Sola gift card in the checkout summary: a field to apply a card, or the applied card with a
+ * Remove button. Behaviour: skin solapayments/giftcard.js. Part of the summary section, so it
+ * is re-rendered with it.
+ *
+ * @var YSRTech_Solapayments_Block_Giftcard $this
+ */
+$quote = $this->getQuote();
+$code = (string) $quote->getSolapaymentsGiftcardCode();
+?>
+<div class="sp-giftcard" data-sp-giftcard
+     data-url-apply="<?php echo $this->getUrl('solapayments/giftcard/apply', ['_secure' => true]) ?>"
+     data-url-remove="<?php echo $this->getUrl('solapayments/giftcard/remove', ['_secure' => true]) ?>"
+     data-url-balance="<?php echo $this->getUrl('solapayments/giftcard/balance', ['_secure' => true]) ?>">
+    <?php if ($code !== ''): ?>
+        <div class="sp-giftcard__applied">
+            <span><?php echo $this->escapeHtml($this->getTitle()) ?> <strong><?php echo $this->escapeHtml(Mage::helper('solapayments')->maskGiftcard($code)) ?></strong></span>
+            <button type="button" class="ysc-button-secondary" data-sp-giftcard-remove><?php echo $this->__('Remove') ?></button>
+        </div>
+    <?php else: ?>
+        <details>
+            <summary><?php echo $this->__('Have a %s?', $this->escapeHtml(strtolower($this->getTitle()))) ?></summary>
+            <div class="ysc-coupon">
+                <div class="ysc-field">
+                    <input type="text" id="sp-giftcard-code" class="ysc-input" placeholder=" " autocomplete="off" inputmode="numeric" data-sp-giftcard-code>
+                    <label for="sp-giftcard-code"><?php echo $this->__('Gift card number') ?></label>
+                </div>
+                <button type="button" class="ysc-button-secondary" data-sp-giftcard-apply><?php echo $this->__('Apply') ?></button>
+            </div>
+            <button type="button" class="sp-giftcard__balance" data-sp-giftcard-balance><?php echo $this->__('Check balance') ?></button>
+        </details>
+    <?php endif ?>
+    <p class="sp-giftcard__message" data-sp-giftcard-message hidden></p>
+</div>

@@ -14,7 +14,64 @@
 
     <ysrtech_unifiedcheckout_index>
         <update handle="solapayments_checkout_assets"/>
+        <reference name="head">
+            <action method="addItem"><type>skin_js</type><name>solapayments/giftcard.js</name></action>
+        </reference>
     </ysrtech_unifiedcheckout_index>
+
+    <!-- Gift card field in the checkout summary (refreshed with it) -->
+    <ysrtech_unifiedcheckout_sections_extend>
+        <reference name="unifiedcheckout.summary.after_coupon">
+            <block type="solapayments/giftcard" name="solapayments.giftcard" template="solapayments/giftcard.phtml"/>
+        </reference>
+    </ysrtech_unifiedcheckout_sections_extend>
+
+    <!-- Gift card line in order, invoice and credit memo totals (account, print, e-mails) -->
+    <sales_order_view>
+        <reference name="order_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.order_totals"/>
+        </reference>
+    </sales_order_view>
+    <sales_order_print>
+        <reference name="order_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.order_totals"/>
+        </reference>
+    </sales_order_print>
+    <sales_email_order_items>
+        <reference name="order_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.order_totals"/>
+        </reference>
+    </sales_email_order_items>
+    <sales_order_invoice>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </sales_order_invoice>
+    <sales_order_printinvoice>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </sales_order_printinvoice>
+    <sales_email_order_invoice_items>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </sales_email_order_invoice_items>
+    <sales_order_creditmemo>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </sales_order_creditmemo>
+    <sales_order_printcreditmemo>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </sales_order_printcreditmemo>
+    <sales_email_order_creditmemo_items>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </sales_email_order_creditmemo_items>
 
     <checkout_onepage_index>
         <update handle="solapayments_checkout_assets"/>

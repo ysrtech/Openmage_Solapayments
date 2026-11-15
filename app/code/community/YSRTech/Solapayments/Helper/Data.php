@@ -5,7 +5,7 @@
  */
 class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    public const VERSION = '2.0.0';
+    public const VERSION = '2.1.0';
     public const XML_PATH = 'payment/solapayments/';
     public const DEFAULT_GATEWAY = 'https://x1.cardknox.com/gateway';
 
@@ -114,5 +114,14 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
             $data = print_r($data, true);
         }
         Mage::log($data, Zend_Log::DEBUG, 'solapayments.log', true);
+    }
+
+    /**
+     * Gift card number for display: last four characters only.
+     */
+    public function maskGiftcard($code)
+    {
+        $code = preg_replace('/\s+/', '', (string) $code);
+        return strlen($code) > 4 ? '•••• ' . substr($code, -4) : $code;
     }
 }

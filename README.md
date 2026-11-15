@@ -20,7 +20,9 @@ PHP 8.4. Replaces the 1.x `Openmage_Solapayments` module (same payment method co
 
 - **Admin Create Order**: charge a saved card of the customer, or a new card in iFields (optionally saved).
 
-In progress: Sola gift cards, Google Pay, Apple Pay.
+- **Sola gift cards**: applied in the checkout summary, redeemed when the order is placed (put back automatically if the order fails), used first by invoices and refunded first by credit memos, put back on cancellation. Orders paid in full by gift card use Zero Subtotal Checkout.
+
+In progress: Google Pay, Apple Pay.
 
 ## Checkout
 

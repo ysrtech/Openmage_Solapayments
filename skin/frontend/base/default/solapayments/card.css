@@ -48,3 +48,12 @@
 .sp-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer; }
 .sp-link--danger:hover { color: #dc2626; }
 .sp-cards-empty { padding: 24px; border-radius: 12px; background: #f9fafb; color: #4b5563; }
+
+/* Gift card in the checkout summary */
+.sp-giftcard { margin: 10px 0 4px; font-size: 14px; }
+.sp-giftcard summary { cursor: pointer; color: var(--ysc-accent, #1773b0); }
+.sp-giftcard details[open] summary { margin-bottom: 10px; }
+.sp-giftcard__applied { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid var(--ysc-border, #d9d9d9); border-radius: var(--ysc-radius, 6px); background: #fff; }
+.sp-giftcard__balance { margin-top: 8px; padding: 0; border: 0; background: none; color: var(--ysc-muted, #707070); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.sp-giftcard__message { margin: 8px 0 0; font-size: 13px; }
+.sp-giftcard__message.is-error { color: var(--ysc-error, #dd1d1d); }

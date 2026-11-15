@@ -10,7 +10,7 @@
 <config>
     <modules>
         <YSRTech_Solapayments>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
         </YSRTech_Solapayments>
     </modules>
     <global>
@@ -38,6 +38,102 @@
                 <class>YSRTech_Solapayments_Helper</class>
             </solapayments>
         </helpers>
+        <sales>
+            <quote>
+                <totals>
+                    <solapayments_giftcard>
+                        <class>solapayments/total_quote</class>
+                        <after>grand_total</after>
+                    </solapayments_giftcard>
+                </totals>
+            </quote>
+            <order_invoice>
+                <totals>
+                    <solapayments_giftcard>
+                        <class>solapayments/total_invoice</class>
+                        <after>grand_total</after>
+                    </solapayments_giftcard>
+                </totals>
+            </order_invoice>
+            <order_creditmemo>
+                <totals>
+                    <solapayments_giftcard>
+                        <class>solapayments/total_creditmemo</class>
+                        <after>grand_total</after>
+                    </solapayments_giftcard>
+                </totals>
+            </order_creditmemo>
+        </sales>
+        <pdf>
+            <totals>
+                <solapayments_giftcard translate="title">
+                    <title>Gift card</title>
+                    <source_field>solapayments_giftcard_amount</source_field>
+                    <amount_prefix>-</amount_prefix>
+                    <font_size>7</font_size>
+                    <display_zero>0</display_zero>
+                    <sort_order>650</sort_order>
+                </solapayments_giftcard>
+            </totals>
+        </pdf>
+        <events>
+            <sales_model_service_quote_submit_before>
+                <observers>
+                    <solapayments_giftcard_redeem>
+                        <class>solapayments/observer</class>
+                        <method>redeemGiftcard</method>
+                    </solapayments_giftcard_redeem>
+                </observers>
+            </sales_model_service_quote_submit_before>
+            <sales_model_service_quote_submit_failure>
+                <observers>
+                    <solapayments_giftcard_reissue>
+                        <class>solapayments/observer</class>
+                        <method>reissueOnFailure</method>
+                    </solapayments_giftcard_reissue>
+                </observers>
+            </sales_model_service_quote_submit_failure>
+            <sales_model_service_quote_submit_success>
+                <observers>
+                    <solapayments_giftcard_clear>
+                        <class>solapayments/observer</class>
+                        <method>clearCheckout</method>
+                    </solapayments_giftcard_clear>
+                </observers>
+            </sales_model_service_quote_submit_success>
+            <sales_order_invoice_register>
+                <observers>
+                    <solapayments_giftcard_invoice>
+                        <class>solapayments/observer</class>
+                        <method>invoiceRegister</method>
+                    </solapayments_giftcard_invoice>
+                </observers>
+            </sales_order_invoice_register>
+            <sales_order_creditmemo_refund>
+                <observers>
+                    <solapayments_giftcard_refund>
+                        <class>solapayments/observer</class>
+                        <method>creditmemoRefund</method>
+                    </solapayments_giftcard_refund>
+                </observers>
+            </sales_order_creditmemo_refund>
+            <payment_method_is_active>
+                <observers>
+                    <solapayments_giftcard_zero_total>
+                        <class>solapayments/observer</class>
+                        <method>zeroTotalMethods</method>
+                    </solapayments_giftcard_zero_total>
+                </observers>
+            </payment_method_is_active>
+            <order_cancel_after>
+                <observers>
+                    <solapayments_giftcard_cancel>
+                        <class>solapayments/observer</class>
+                        <method>orderCancel</method>
+                    </solapayments_giftcard_cancel>
+                </observers>
+            </order_cancel_after>
+        </events>
         <resources>
             <ysrtech_solapayments_setup>
                 <setup>
@@ -113,6 +209,9 @@
                 <ifields_version>3.5.2607.1401</ifields_version>
                 <debug>0</debug>
                 <allowspecific>0</allowspecific>
+                <giftcard_enabled>0</giftcard_enabled>
+                <giftcard_title>Gift card</giftcard_title>
+                <giftcard_url>https://x1.cardknox.com/gatewayjson</giftcard_url>
                 <cardknox_transaction_key backend_model="adminhtml/system_config_backend_encrypted"/>
                 <cardknox_token_key backend_model="adminhtml/system_config_backend_encrypted"/>
             </solapayments>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- YSRTech_Solapayments in admin Create Order: iFields script and the card form script -->
+<!-- YSRTech_Solapayments in the admin: card form in Create Order, gift card line in totals -->
 <layout version="0.1.0">
     <adminhtml_sales_order_create_index>
         <reference name="head">
@@ -8,4 +8,40 @@
             <action method="addItem"><type>skin_js</type><name>solapayments/admin.js</name></action>
         </reference>
     </adminhtml_sales_order_create_index>
+    <!-- Gift card line in order, invoice and credit memo totals -->
+    <adminhtml_sales_order_view>
+        <reference name="order_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.order_totals"/>
+        </reference>
+    </adminhtml_sales_order_view>
+    <adminhtml_sales_order_invoice_new>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </adminhtml_sales_order_invoice_new>
+    <adminhtml_sales_order_invoice_updateqty>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </adminhtml_sales_order_invoice_updateqty>
+    <adminhtml_sales_order_invoice_view>
+        <reference name="invoice_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.invoice_totals"/>
+        </reference>
+    </adminhtml_sales_order_invoice_view>
+    <adminhtml_sales_order_creditmemo_new>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </adminhtml_sales_order_creditmemo_new>
+    <adminhtml_sales_order_creditmemo_updateqty>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </adminhtml_sales_order_creditmemo_updateqty>
+    <adminhtml_sales_order_creditmemo_view>
+        <reference name="creditmemo_totals">
+            <block type="solapayments/sales_totals" name="solapayments.giftcard.creditmemo_totals"/>
+        </reference>
+    </adminhtml_sales_order_creditmemo_view>
 </layout>
