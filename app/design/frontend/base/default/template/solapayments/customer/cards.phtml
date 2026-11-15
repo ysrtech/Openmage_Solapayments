@@ -1,0 +1,45 @@
+<?php
+/**
+ * My Account > Saved cards: remove a card or make it the default. Cards are saved when paying
+ * ("Save this card"); only Sola's token and the card's type, last digits and expiry are kept.
+ *
+ * @var YSRTech_Solapayments_Block_Customer_Cards $this
+ */
+$cards = $this->getCards();
+$formKey = $this->getBlockHtml('formkey');
+?>
+<div class="page-title"><h1><?php echo $this->__('Saved cards') ?></h1></div>
+<?php echo $this->getMessagesBlock()->toHtml() ?>
+<?php if (!count($cards)): ?>
+    <div class="sp-cards-empty">
+        <p><?php echo $this->__('You have no saved cards. When you pay by card, tick "Save this card" to pay faster next time.') ?></p>
+    </div>
+<?php else: ?>
+    <ul class="sp-cards">
+        <?php foreach ($cards as $card): ?>
+            <li class="sp-cards__item<?php if ($card->isExpired()): ?> is-expired<?php endif ?>">
+                <span class="sp-brand sp-brand--<?php echo $this->escapeHtml(strtolower(preg_replace('/[^a-z]/i', '', (string) $card->getCardType()))) ?>"><?php echo $this->escapeHtml($card->getCardType() ?: $this->__('Card')) ?></span>
+                <span class="sp-cards__number">•••• <?php echo $this->escapeHtml($card->getLast4()) ?></span>
+                <span class="sp-cards__exp">
+                    <?php echo $card->isExpired() ? $this->__('Expired %s', $card->getExpiryLabel()) : $this->__('Expires %s', $card->getExpiryLabel()) ?>
+                </span>
+                <?php if ($card->getIsDefault()): ?>
+                    <span class="sp-cards__default"><?php echo $this->__('Default') ?></span>
+                <?php endif ?>
+                <span class="sp-cards__actions">
+                    <?php if (!$card->getIsDefault() && !$card->isExpired()): ?>
+                        <form action="<?php echo $this->getUrl('solapayments/cards/default') ?>" method="post">
+                            <?php echo $formKey ?><input type="hidden" name="id" value="<?php echo (int) $card->getId() ?>">
+                            <button type="submit" class="sp-link"><?php echo $this->__('Make default') ?></button>
+                        </form>
+                    <?php endif ?>
+                    <form action="<?php echo $this->getUrl('solapayments/cards/delete') ?>" method="post"
+                          onsubmit="return confirm('<?php echo Mage::helper('core')->jsQuoteEscape($this->__('Remove this card?')) ?>');">
+                        <?php echo $formKey ?><input type="hidden" name="id" value="<?php echo (int) $card->getId() ?>">
+                        <button type="submit" class="sp-link sp-link--danger"><?php echo $this->__('Remove') ?></button>
+                    </form>
+                </span>
+            </li>
+        <?php endforeach ?>
+    </ul>
+<?php endif ?>

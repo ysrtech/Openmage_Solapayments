@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!--
+    YSRTech_Solapayments: Sola Payments (Cardknox) for OpenMage, ported from Sola's Magento 2
+    module (cardknox/magento2_cardknox, MIT).
+
+    Method "solapayments": cards entered in Cardknox iFields (card data never reaches this
+    server; the browser gets single-use tokens), or a saved card (Cardknox token) of the
+    customer. 3D Secure, split capture, Level 3 data, refunds and voids from the admin.
+-->
+<config>
+    <modules>
+        <YSRTech_Solapayments>
+            <version>2.0.0</version>
+        </YSRTech_Solapayments>
+    </modules>
+    <global>
+        <models>
+            <solapayments>
+                <class>YSRTech_Solapayments_Model</class>
+                <resourceModel>solapayments_resource</resourceModel>
+            </solapayments>
+            <solapayments_resource>
+                <class>YSRTech_Solapayments_Model_Resource</class>
+                <entities>
+                    <card>
+                        <table>solapayments_card</table>
+                    </card>
+                </entities>
+            </solapayments_resource>
+        </models>
+        <blocks>
+            <solapayments>
+                <class>YSRTech_Solapayments_Block</class>
+            </solapayments>
+        </blocks>
+        <helpers>
+            <solapayments>
+                <class>YSRTech_Solapayments_Helper</class>
+            </solapayments>
+        </helpers>
+        <resources>
+            <ysrtech_solapayments_setup>
+                <setup>
+                    <module>YSRTech_Solapayments</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </ysrtech_solapayments_setup>
+        </resources>
+    </global>
+    <frontend>
+        <routers>
+            <solapayments>
+                <use>standard</use>
+                <args>
+                    <module>YSRTech_Solapayments</module>
+                    <frontName>solapayments</frontName>
+                </args>
+            </solapayments>
+        </routers>
+        <layout>
+            <updates>
+                <solapayments>
+                    <file>solapayments.xml</file>
+                </solapayments>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <YSRTech_Solapayments>
+                    <files>
+                        <default>YSRTech_Solapayments.csv</default>
+                    </files>
+                </YSRTech_Solapayments>
+            </modules>
+        </translate>
+        <secure_url>
+            <solapayments>/solapayments/</solapayments>
+        </secure_url>
+    </frontend>
+    <adminhtml>
+        <layout>
+            <updates>
+                <solapayments>
+                    <file>solapayments.xml</file>
+                </solapayments>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <YSRTech_Solapayments>
+                    <files>
+                        <default>YSRTech_Solapayments.csv</default>
+                    </files>
+                </YSRTech_Solapayments>
+            </modules>
+        </translate>
+    </adminhtml>
+    <default>
+        <payment>
+            <solapayments>
+                <active>0</active>
+                <model>solapayments/method_card</model>
+                <title>Credit card</title>
+                <payment_action>authorize</payment_action>
+                <order_status>processing</order_status>
+                <split_capture_enabled>0</split_capture_enabled>
+                <vault_active>1</vault_active>
+                <level3_enabled>0</level3_enabled>
+                <cardknox_enable_three_d_secure>0</cardknox_enable_three_d_secure>
+                <cardknox_three_d_secure_environment>production</cardknox_three_d_secure_environment>
+                <cgi_url>https://x1.cardknox.com/gateway</cgi_url>
+                <three_ds_verify_url>https://x1.cardknox.com/verify</three_ds_verify_url>
+                <ifields_version>3.5.2607.1401</ifields_version>
+                <debug>0</debug>
+                <allowspecific>0</allowspecific>
+                <cardknox_transaction_key backend_model="adminhtml/system_config_backend_encrypted"/>
+                <cardknox_token_key backend_model="adminhtml/system_config_backend_encrypted"/>
+            </solapayments>
+        </payment>
+    </default>
+</config>

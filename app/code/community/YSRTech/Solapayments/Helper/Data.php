@@ -30,11 +30,39 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Transaction key (secret, server only). Stored encrypted.
+     * Transaction key (secret, server only). Stored encrypted; getStoreConfig() decrypts it
+     * (backend_model attribute in config.xml).
      */
     public function getTransactionKey($store = null)
     {
-        return trim((string) Mage::helper('core')->decrypt($this->getConfig('cardknox_transaction_key', $store)));
+        return trim((string) $this->getConfig('cardknox_transaction_key', $store));
+    }
+
+    public function getIfieldsVersion($store = null)
+    {
+        return (string) ($this->getConfig('ifields_version', $store) ?: '3.5.2607.1401');
+    }
+
+    public function getIfieldsUrl($file, $store = null)
+    {
+        return 'https://cdn.cardknox.com/ifields/' . $this->getIfieldsVersion($store) . '/' . $file;
+    }
+
+    public function isVaultEnabled($store = null)
+    {
+        return $this->getConfigFlag('vault_active', $store);
+    }
+
+    public function isThreeDsEnabled($store = null)
+    {
+        return $this->getConfigFlag('cardknox_enable_three_d_secure', $store)
+            && (string) $this->getConfig('cardknox_three_d_secure_environment', $store) !== '';
+    }
+
+    public function isSplitCapture($store = null)
+    {
+        return $this->getConfigFlag('split_capture_enabled', $store)
+            && $this->getConfig('payment_action', $store) === Mage_Payment_Model_Method_Abstract::ACTION_AUTHORIZE;
     }
 
     public function getGatewayUrl($store = null)
@@ -58,7 +86,9 @@ class YSRTech_Solapayments_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getIpAddress()
     {
-        return (string) Mage::helper('core/http')->getRemoteAddr();
+        $ip = (string) Mage::helper('core/http')->getRemoteAddr();
+        $ip = trim(explode(',', $ip)[0]);
+        return strlen($ip) <= 45 ? $ip : '';
     }
 
     public function getSoftwareName()

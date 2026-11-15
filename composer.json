@@ -1,0 +1,20 @@
+{
+    "name": "ysrtech/openmage-solapayments",
+    "description": "Sola Payments (Cardknox) for OpenMage: cards in iFields, saved cards, 3D Secure, split capture, Level 3, refunds and voids; ported from Sola's Magento 2 module.",
+    "type": "magento-module",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*",
+        "magento-hackathon/magento-composer-installer": "*"
+    },
+    "extra": {
+        "map": [
+            ["app/etc/modules/YSRTech_Solapayments.xml", "app/etc/modules/YSRTech_Solapayments.xml"],
+            ["app/code/community/YSRTech/Solapayments", "app/code/community/YSRTech/Solapayments"],
+            ["app/design/frontend/base/default/layout/solapayments.xml", "app/design/frontend/base/default/layout/solapayments.xml"],
+            ["app/design/frontend/base/default/template/solapayments", "app/design/frontend/base/default/template/solapayments"],
+            ["skin/frontend/base/default/solapayments", "skin/frontend/base/default/solapayments"]
+        ]
+    }
+}

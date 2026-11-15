@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+    YSRTech_Solapayments storefront: iFields script and card form script on checkout pages
+    (YSRTech_UnifiedCheckout page, and the standard onepage checkout), Saved cards in My Account.
+-->
+<layout version="0.1.0">
+    <solapayments_checkout_assets>
+        <reference name="head">
+            <block type="solapayments/scripts" name="solapayments.scripts"/>
+            <action method="addItem"><type>skin_css</type><name>solapayments/card.css</name></action>
+            <action method="addItem"><type>skin_js</type><name>solapayments/card.js</name></action>
+        </reference>
+    </solapayments_checkout_assets>
+
+    <ysrtech_unifiedcheckout_index>
+        <update handle="solapayments_checkout_assets"/>
+    </ysrtech_unifiedcheckout_index>
+
+    <checkout_onepage_index>
+        <update handle="solapayments_checkout_assets"/>
+    </checkout_onepage_index>
+
+    <customer_account>
+        <reference name="customer_account_navigation">
+            <action method="addLink" translate="label" module="solapayments" ifconfig="payment/solapayments/vault_active">
+                <name>solapayments_cards</name><path>solapayments/cards</path><label>Saved cards</label>
+            </action>
+        </reference>
+    </customer_account>
+
+    <solapayments_cards_index>
+        <update handle="customer_account"/>
+        <reference name="head">
+            <action method="addItem"><type>skin_css</type><name>solapayments/card.css</name></action>
+        </reference>
+        <reference name="my.account.wrapper">
+            <block type="solapayments/customer_cards" name="solapayments.cards" template="solapayments/customer/cards.phtml"/>
+        </reference>
+    </solapayments_cards_index>
+</layout>

@@ -16,12 +16,13 @@ class YSRTech_Solapayments_Model_Api
     public const RESULT_VERIFY   = 'V';
 
     /**
-     * @param array $fields request fields (without the common ones)
-     * @param mixed $store
+     * @param array       $fields request fields (without the common ones)
+     * @param mixed       $store
+     * @param string|null $url    another endpoint (3D Secure verify), default the gateway URL
      * @return array answer fields
      * @throws Mage_Core_Exception when the gateway cannot be reached
      */
-    public function request(array $fields, $store = null)
+    public function request(array $fields, $store = null, $url = null)
     {
         $helper = Mage::helper('solapayments');
         $fields = array_merge([
@@ -34,7 +35,7 @@ class YSRTech_Solapayments_Model_Api
         ], array_filter($fields, fn ($v) => $v !== null && $v !== ''));
 
         $helper->log(['request' => $fields], $store);
-        $curl = curl_init($helper->getGatewayUrl($store));
+        $curl = curl_init($url ?: $helper->getGatewayUrl($store));
         curl_setopt_array($curl, [
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => http_build_query($fields),
